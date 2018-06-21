@@ -5,78 +5,81 @@ function Book(title, author, isbn){
 	this.isbn = isbn;
 }
 
-// UI Elements
+// UI Constructor
 
-const bookForm = document.getElementById('book-form'); 
-const bookList = document.getElementById('book-list');
-const titleInput = document.getElementById('title');
-const authorInput = document.getElementById('author');
-const isbnInput = document.getElementById('isbn');
-const removeButtons = Array.from(document.querySelectorAll('.remove-button'));
+function UI() {}
 
+//Add book to list
+UI.prototype.addBookToList = function(book) {
+	const list = document.getElementById('book-list');
+	// Creates new table row
+	const row = document.createElement('tr');
+	
+	row.innerHTML = `
+		<td>${book.title}</td>
+		<td>${book.author}</td>
+		<td>${book.isbn}</td>
+		<td><a href="#" class="delete">X</a></td>
+	`;
+	list.appendChild(row)
+};
 
+// Show alert message
+UI.prototype.showAlert = function(message, className) {
+	// Create div
+	const div = document.createElement('div');
+	// Add classes
+	div.className = `alert ${className}`;
+	// Add text
+	div.appendChild(document.createTextNode(message));
+	// Get parent
+	const container = document.querySelector('.container');
+	// Get form
+	const form = document.getElementById('book-form'); 
+	// Insert alert
+	container.insertBefore(div, form);
+	// Timeout after 3 seconds
+	setTimeout(function(){
+		document.querySelector('.alert').remove()
+	}, 3000)
 
-// Input Validation
-function validate(e){
-	e.preventDefault()
-	if(titleInput.value === "" || authorInput.value === "" || isbnInput.value === "") {
-		showErrorMessage()
+};
+
+// Clears fields
+UI.prototype.clearFields = function() {
+	document.getElementById('title').value = '';
+ 	document.getElementById('author').value = '';
+ 	document.getElementById('isbn').value = '';
+};
+
+//Event Listener for Add Book
+
+document.getElementById('book-form').addEventListener('submit', 
+	function(e){
+// Get form values
+	const title = document.getElementById('title').value,
+ 		  author = document.getElementById('author').value,
+ 		  isbn = document.getElementById('isbn').value;
+
+// Instantiate book
+	const book = new Book(title, author, isbn);
+// Instantiate UI
+	const ui = new UI();
+
+// Validate
+if(title === "" || author === "" || isbn === "") {
+		// Show error
+		ui.showAlert("Please fill in all fields", "error")
 	} else {
-		addBook(e);
-		showSuccessMessage()
+	// Add book to list	
+		ui.addBookToList(book);
+
+	// Show success
+		ui.showAlert("Book Added!", "success")
+	// Clear fields
+		ui.clearFields()
 	}
-}
 
-// Error message
-function showErrorMessage(){
-	const errorMessage = document.createElement('p');
-	errorMessage.innerText = "Please fill all input fields";
-	errorMessage.classList.add('error');
-	bookForm.appendChild(errorMessage);
-	setTimeout(function(){bookForm.removeChild(errorMessage)}, 3000)
-}
+	e.preventDefault();
+}); 
 
-//Success message
-function showSuccessMessage(){
-	const successMessage = document.createElement('p');
-	successMessage.innerText = "Book added to your list";
-	successMessage.classList.add('success');
-	bookForm.appendChild(successMessage);
-	setTimeout(function(){bookForm.removeChild(successMessage)}, 3000)
-}
-
-// Adds book
-function addBook(e){
-	const book = new Book(titleInput.value, authorInput.value, isbnInput.value)
-	
-	// Creates new teble row
-	const tr = document.createElement('tr');
-	
-	// Adds Title
-	const bookTitle = document.createElement('td');
-	bookTitle.innerText = book.title;
-	
-	// Adds author
-	const bookAuthor = document.createElement('td');
-	bookAuthor.innerText = book.author;
-	
-	// Adds ISBN
-	const bookISBN = document.createElement('td');
-	bookISBN.innerText = book.isbn;
-	
-	//Adds Delete Button
-	const deletePositionButton = document.createElement('td');
-	deletePositionButton.classList.add('remove-button');
-	deletePositionButton.style.cursor = "pointer";
-	deletePositionButton.innerText = "x"
-	
-	//Appends all elements
-	tr.appendChild(bookTitle);
-	tr.appendChild(bookAuthor);
-	tr.appendChild(bookISBN);	
-	tr.appendChild(deletePositionButton);
-	bookList.appendChild(tr)
-}
-
-bookForm.addEventListener('submit', validate); 
-// removeButtons.addEventListener('click', function(e){console.log(e)})
