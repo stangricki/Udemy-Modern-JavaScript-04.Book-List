@@ -7,14 +7,14 @@ function Book(title, author, isbn){
 
 // UI Elements
 
-const bookForm = document.getElementById('book-list-form'); 
-const bookTable = document.getElementById('book-list-table');
-const bookTableBody = document.getElementById('book-table-body');
+const bookForm = document.getElementById('book-form'); 
+const bookList = document.getElementById('book-list');
 const titleInput = document.getElementById('title');
 const authorInput = document.getElementById('author');
 const isbnInput = document.getElementById('isbn');
+const removeButtons = Array.from(document.querySelectorAll('.remove-button'));
 
-bookForm.addEventListener('submit', validate); 
+
 
 // Input Validation
 function validate(e){
@@ -66,6 +66,8 @@ function addBook(e){
 	
 	//Adds Delete Button
 	const deletePositionButton = document.createElement('td');
+	deletePositionButton.classList.add('remove-button');
+	deletePositionButton.style.cursor = "pointer";
 	deletePositionButton.innerText = "x"
 	
 	//Appends all elements
@@ -73,5 +75,8 @@ function addBook(e){
 	tr.appendChild(bookAuthor);
 	tr.appendChild(bookISBN);	
 	tr.appendChild(deletePositionButton);
-	bookTableBody.appendChild(tr)
+	bookList.appendChild(tr)
 }
+
+bookForm.addEventListener('submit', validate); 
+// removeButtons.addEventListener('click', function(e){console.log(e)})
